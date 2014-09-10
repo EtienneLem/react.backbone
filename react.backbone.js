@@ -14,12 +14,12 @@
     'use strict';
 
     var collectionBehavior = {
-        changeOptions: 'add remove reset sort',
+        changeOptions: 'add remove reset sort render',
         updateScheduler: function(func) { return _.debounce(func, 0); }
     };
 
     var modelBehavior = {
-        changeOptions: 'change',
+        changeOptions: 'change render',
         //note: if we debounce models too we can no longer use model attributes
         //as properties to react controlled components due to https://github.com/facebook/react/issues/955
         updateScheduler: _.identity

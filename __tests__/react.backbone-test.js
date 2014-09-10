@@ -37,6 +37,19 @@ describe('react.backbone', function() {
       expect(header.getDOMNode().textContent).toEqual('David');
     });
 
+    it('renders model on render event', function() {
+      var user = new Backbone.Model({name: "Clay"});
+      var userViewRef = UserView({model: user});
+      var userView = TestUtils.renderIntoDocument(userViewRef);
+      user.set("name", "David", {silent: true});
+
+      var header = TestUtils.findRenderedDOMComponentWithTag(userView, 'h1');
+      expect(header.getDOMNode().textContent).toEqual('Clay');
+
+      user.trigger('render');
+      expect(header.getDOMNode().textContent).toEqual('David');
+    });
+
     describe("with changeOptions", function() {
       var UserView = React.createBackboneClass({
         changeOptions: "change:name",
@@ -100,7 +113,6 @@ describe('react.backbone', function() {
     });
 
     it('renders collection on adding', function() {
-
       var usersList = new Backbone.Collection([{name: "Clay"}, {name: "David"}]);
       var usersListViewRef = UsersListView({collection: usersList});
       var usersListView = TestUtils.renderIntoDocument(usersListViewRef);
@@ -109,6 +121,25 @@ describe('react.backbone', function() {
       jest.runOnlyPendingTimers();
 
       var list = TestUtils.findRenderedDOMComponentWithTag(usersListView, 'ul');
+      expect(list.getDOMNode().childNodes.length).toEqual(3);
+      expect(list.getDOMNode().childNodes[2].textContent).toEqual("Jack");
+    });
+
+    it('renders collection on render event', function() {
+      var usersList = new Backbone.Collection([{name: "Clay"}, {name: "David"}]);
+      var usersListViewRef = UsersListView({collection: usersList});
+      var usersListView = TestUtils.renderIntoDocument(usersListViewRef);
+
+      usersList.add({name: "Jack"}, {silent: true});
+      jest.runOnlyPendingTimers();
+
+      var list = TestUtils.findRenderedDOMComponentWithTag(usersListView, 'ul');
+      expect(list.getDOMNode().childNodes.length).toEqual(2);
+      expect(list.getDOMNode().childNodes[2]).toBeUndefined();
+
+      usersList.trigger('render');
+      jest.runOnlyPendingTimers();
+
       expect(list.getDOMNode().childNodes.length).toEqual(3);
       expect(list.getDOMNode().childNodes[2].textContent).toEqual("Jack");
     });
